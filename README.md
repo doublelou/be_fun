@@ -30,4 +30,5 @@
     · 交易频率 TOP3
     · 老鼠仓出尽探底买1，有利润就卖1
     · 二次探底买2，前高压力位出尽
-[!image](https://github.com/KIMQI001/be_fun/blob/main/img/boduan.jpg)
+      
+![image](https://github.com/KIMQI001/be_fun/blob/main/img/boduan.jpg)
