@@ -43,9 +43,9 @@ https://github.com/milkersman/pumpcow-pumpfun-bot/assets/167958821/058d2d99-c37e
 
 ## 🛸 运行
 
-1. 下载代码: `pump-fun-sniper-bot.zip`
+1. cp env_temp .env
 
-2. 安装node ( https://nodejs.org/en ) 如果尚未安装。
+2. npm install 
   
-3. 运行输入命令: `npm run buy` 
+3. npm run buy
 
