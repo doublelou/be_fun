@@ -2,170 +2,319 @@ import asyncio
 import requests
 import datetime
 import time
+import concurrent.futures
+
+
+# from dotenv import dotenv_values
+# config = dotenv_values(".env")
+
+# async_solana_client= AsyncClient(config["RPC_HTTPS_URL"]) #Enter your API KEY in .env file
+
+# solana_client = Client(config["RPC_HTTPS_URL"])
+
+# LAMPORTS_PER_SOL = 1000000000
+# MAX_RETRIES = 5
+# RETRY_DELAY = 3
+
+from solders.keypair import Keypair
+from solanatracker import SolanaTracker
+
+from solana.rpc.api import Client
 from solana.rpc.types import TokenAccountOpts
 from solders.pubkey import Pubkey
-from solana.rpc.commitment import Commitment, Confirmed, Finalized
-from solana.rpc.api import RPCException
-from solana.rpc.api import Client, Keypair
-from dexscreener import DexscreenerClient
-from solana.rpc.async_api import AsyncClient
-from solders.compute_budget import set_compute_unit_price,set_compute_unit_limit
-from spl.token.instructions import create_associated_token_account, get_associated_token_address, close_account, \
-    CloseAccountParams
-from util.create_close_account import  fetch_pool_keys,  make_swap_instruction
-from spl.token.client import Token
-from spl.token.core import _TokenCore
 
-from dotenv import dotenv_values
-config = dotenv_values(".env")
+solana_client = Client("https://api.mainnet-beta.solana.com")
 
-async_solana_client= AsyncClient(config["RPC_HTTPS_URL"]) #Enter your API KEY in .env file
-
-solana_client = Client(config["RPC_HTTPS_URL"])
-
-LAMPORTS_PER_SOL = 1000000000
-MAX_RETRIES = 5
-RETRY_DELAY = 3
-
-#You can use getTimeStamp With Print Statments to evaluate How fast your transactions are confirmed
-
-def getTimestamp():
-    while True:
-        timeStampData = datetime.datetime.now()
-        currentTimeStamp = "[" + timeStampData.strftime("%H:%M:%S.%f")[:-3] + "]"
-        return currentTimeStamp
+sol_key = Keypair.from_base58_string("")
+owner = sol_key.pubkey()
 
 
-async def get_token_account(ctx,
-                                owner: Pubkey.from_string,
-                                mint: Pubkey.from_string):
-        try:
-            account_data = await ctx.get_token_accounts_by_owner(owner, TokenAccountOpts(mint))
-            return account_data.value[0].pubkey, None
-        except:
-            swap_associated_token_address = get_associated_token_address(owner, mint)
-            swap_token_account_Instructions = create_associated_token_account(owner, owner, mint)
-            return swap_associated_token_address, swap_token_account_Instructions
+sol_addr = "So11111111111111111111111111111111111111112"
+sol_amt = 0.005
+
+
+import sqlite3
+
 
 class token:
-    def __init__(self, mint, name, symbol, bondingCurve, associatedBCurve) -> None:
+    def __init__(self, mint, name, symbol, bondingCurve, associatedBCurve,creator,twitter,telegram) -> None:
         self.mint = mint
         self.name = name
         self.symbol = symbol
         self.bondingCurve = bondingCurve
         self.associatedBCurve = associatedBCurve
+        self.creator = creator
+        self.twitter = twitter
+        self.telegram = telegram
 
 
-url = "https://client-api-2-74b1891ee9f9.herokuapp.com/coins?offset=0&limit=3&sort=created_timestamp&order=DESC&includeNsfw=true"
+last_mints = set()
 
-r = requests.get(url = url)
+def get_new_tokens():
+    global last_mints
+    smart_money = "HZoxemecYjge7b4fhPQw8KXA5zp7my13qeXVHyjQHD6T"
 
-data = r.json()
+    url = "https://client-api-2-74b1891ee9f9.herokuapp.com/coins?offset=0&limit=20&sort=created_timestamp&order=DESC&includeNsfw=true"
 
-tokens = []
+    try:
+        r = requests.get(url=url)
+        r.raise_for_status()  # Raise an HTTPError if the request was not successful
+        data = r.json()
+    except requests.RequestException as e:
+        print(f"Error fetching data: {e}")
+        return
 
-for coin in data:
-    new_token = token(coin['mint'], coin['name'], coin['symbol'], coin['bonding_curve'], coin['associated_bonding_curve'])
-    tokens.append(new_token)
+    tokens = []
 
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [executor.submit(process_coin, coin) for coin in data]
+        for future in concurrent.futures.as_completed(futures):
+            result = future.result()
+            if result is not None:
+                tokens.append(result)
 
+    last_mints = {token.mint for token in tokens}
 
-async def buy(solana_client, TOKEN_TO_SWAP_BUY, payer, amount):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        results = [executor.submit(check_dev, token.mint, token.creator,smart_money) for token in tokens]
 
-    retry_count = 0
-    while retry_count < MAX_RETRIES:
-        try:
-            # token_symbol, SOl_Symbol = getSymbol(TOKEN_TO_SWAP_BUY)
-            mint = Pubkey.from_string(TOKEN_TO_SWAP_BUY)
-            pool_keys = fetch_pool_keys(str(mint))
-            amount_in = int(amount * LAMPORTS_PER_SOL)
-            accountProgramId = solana_client.get_account_info_json_parsed(mint)
-            TOKEN_PROGRAM_ID = accountProgramId.value.owner
+        for future in concurrent.futures.as_completed(results):
+            # Handle exceptions if any
+            try:
+                future.result()
+            except Exception as e:
+                print(f"An error occurred: {e}")
 
-            balance_needed = Token.get_min_balance_rent_for_exempt_for_account(solana_client)
-            swap_associated_token_address, swap_token_account_Instructions = await get_token_account(async_solana_client,payer.pubkey(),mint)
-            WSOL_token_account, swap_tx, payer, Wsol_account_keyPair, opts, = _TokenCore._create_wrapped_native_account_args(
-                TOKEN_PROGRAM_ID, payer.pubkey(), payer, amount_in,
-                False, balance_needed, Commitment("confirmed"))
+def process_coin(coin):
+    mint = coin['mint']
+    if mint in last_mints:
+        return None  # Skip if mint is in last mints
 
-            instructions_swap = make_swap_instruction(amount_in,
-                                                      WSOL_token_account,
-                                                      swap_associated_token_address,
-                                                      pool_keys,
-                                                      mint,
-                                                      solana_client,
-                                                      payer)
-            params = CloseAccountParams(account=WSOL_token_account, dest=payer.pubkey(), owner=payer.pubkey(),
-                                        program_id=TOKEN_PROGRAM_ID)
-            closeAcc = (close_account(params))
-            if swap_token_account_Instructions != None:
-                swap_tx.add(swap_token_account_Instructions)
+    new_token = token(coin['mint'], coin['name'], coin['symbol'], coin['bonding_curve'], coin['associated_bonding_curve'], coin['creator'], coin['twitter'], coin['telegram'])
 
-            #compute unit price and comute unit limit gauge your gas fees more explanations on how to calculate in a future article
+    if new_token.twitter is not None or new_token.telegram is not None:
+        if rug_check(coin['mint']) == False:
+            return new_token
 
-            swap_tx.add(instructions_swap,set_compute_unit_price(25_232),set_compute_unit_limit(200_337),closeAcc)
-            txn = solana_client.send_transaction(swap_tx, payer,Wsol_account_keyPair)
-            txid_string_sig = txn.value
-            if txid_string_sig:
-                print("Transaction sent")
-                # print(f"Transaction Signature Waiting to be confirmed: https://solscan.io/tx/{txid_string_sig}")
-                print("Waiting Confirmation")
+    return None
 
-            confirmation_resp = solana_client.confirm_transaction(
-                txid_string_sig,
-                commitment=Confirmed,
-                sleep_seconds=0.5,
+def rug_check(mint):
+    url = f"https://gmgn.ai/defi/quotation/v1/tokens/sol/{mint}"
+    try:
+        response = requests.get(url)
+        data = response.json()
+
+        if data.get("code") == 0 and data.get("msg") == "success":
+            token_data = data.get("data").get("token")
+            rug_ratio = token_data.get("rug_ratio")
+            holder_count = token_data.get("holder_count")
+
+            print(
+                {"mint": str(mint)},
+                f"Rug Ratio: {rug_ratio} and holderCount: {holder_count}"
             )
 
-            if confirmation_resp.value[0].err == None and str(
-                    confirmation_resp.value[0].confirmation_status) == "TransactionConfirmationStatus.Confirmed":
-                print("Transaction Confirmed")
-                print(f"Transaction Signature: https://solscan.io/tx/{txid_string_sig}")
-
-                return
-
-            else:
-                print("Transaction not confirmed")
+            if rug_ratio is None:
                 return False
-
-
-        except asyncio.TimeoutError:
-            print("Transaction confirmation timed out. Retrying...")
-            retry_count += 1
-            time.sleep(RETRY_DELAY)
-        except RPCException as e:
-            print(f"RPC Error: [{e.args[0]}]... Retrying...")
-            retry_count += 1
-            time.sleep(RETRY_DELAY)
-        except Exception as e:
-            if "block height exceeded" in str(e):
-                print("Transaction has expired due to block height exceeded. Retrying...")
-                retry_count += 1
-                await asyncio.sleep(RETRY_DELAY)
             else:
-                print(f"Unhandled exception: {e}. Retrying...")
-                retry_count += 1
-                await asyncio.sleep(RETRY_DELAY)
-        # except Exception as e:
-        #     print(f"Unhandled exception: {e}. Retrying...")
-        #     retry_count = MAX_RETRIES
-        #     return False
-
-    print("Failed to confirm transaction after maximum retries.")
-    return False
+                return rug_ratio > 0.5  # 如果 rug_ratio 大于 0.5，则返回 True，否则返回 False
+    except Exception as error:
+        print(f"An error occurred: {error}")
+        return True
 
 
+async def swap(source,des,amt):
+    keypair = sol_key
+    solana_tracker = SolanaTracker(keypair, "https://api.solanatracker.io/rpc")
+    print("swap to " , des)
+    swap_response = await solana_tracker.get_swap_instructions(
+        source,  # From Token
+        des,  # To Token
+        amt,  # Amount to swap
+        10,  # Slippage
+        str(keypair.pubkey()),  # Payer public key
+        0.00005,  # Priority fee (Recommended while network is congested)
+        True,  # Force legacy transaction for Jupiter
+    )
 
-##
+    txid = await solana_tracker.perform_swap(swap_response)
+
+    # Returns txid when the swap is successful or raises an exception if the swap fails
+    print("Transaction ID:", txid)
+    print("Transaction URL:", f"https://explorer.solana.com/tx/{txid}")
+
+
+
+import threading
+
+def delete_records():
+    conn = sqlite3.connect('processed_addresses.db')
+    c = conn.cursor()
+
+    # 获取删除前的记录数
+    c.execute("SELECT COUNT(*) FROM processed_addresses WHERE dev_action = 'dev give up'")
+    num_before_delete = c.fetchone()[0]
+    print(f"Before deletion: {num_before_delete} records")
+
+    # 执行删除操作的 SQL 查询
+    c.execute('''DELETE FROM processed_addresses 
+                WHERE dev_action = 'dev give up' 
+                AND (SELECT COUNT(*) FROM processed_addresses) > 50''')
+
+    conn.commit()
+
+    # 获取删除后的记录数
+    c.execute("SELECT COUNT(*) FROM processed_addresses WHERE dev_action = 'dev give up'")
+    num_after_delete = c.fetchone()[0]
+    print(f"After deletion: {num_after_delete} records")
+
+    # 关闭数据库连接
+    conn.close()
+
+def check_dev(token_address, creator, smart_money):
+    # 连接到数据库
+    conn = sqlite3.connect('processed_addresses.db')
+    c = conn.cursor()
+
+    # 创建一个表来存储已处理的地址
+    c.execute('''CREATE TABLE IF NOT EXISTS processed_addresses
+                (token_address TEXT PRIMARY KEY,
+                creator TEXT,
+                smart_money TEXT,
+                dev_action TEXT,
+                num_trades INTEGER,
+                current_time TEXT)''')
+    
+    # 检查地址是否已经处理过
+    c.execute("SELECT * FROM processed_addresses WHERE token_address=?", (token_address,))
+    if c.fetchone():
+        conn.close()
+        return
+
+    url = f"https://client-api-2-74b1891ee9f9.herokuapp.com/trades/{token_address}?limit=5&offset=0"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Error fetching data for {token_address}: {e}")
+        conn.close()
+        return
+
+    if response.status_code == 200:
+        trades = response.json()
+        num_trades = len(trades)
+        
+        if num_trades < 4:
+            is_buy_exist = False
+            is_sell_exist = False
+            for trade in trades:
+                if trade["user"] == creator:
+                    if trade["is_buy"]:
+                        is_buy_exist = True
+                    else:
+                        is_sell_exist = True
+
+            if is_buy_exist and is_sell_exist:
+                print(token_address, "dev give up")
+
+            elif is_buy_exist:
+                if smart_money in [trade["user"] for trade in trades]:
+                    print(token_address, "smart money buy with dev")
+                    ## TODO:buy
+                    asyncio.run(swap(sol_addr,token_address,sol_amt))
+                    # 将地址记录到数据库中，同时记录 creator 和 smart_money
+                    c.execute("INSERT INTO processed_addresses (token_address, creator, smart_money, dev_action) VALUES (?, ?, ?, ?)", (token_address, creator, smart_money, "dev buy"))
+                    conn.commit()
+                else:
+                    print(token_address, "dev buy")
+                    ## TODO:buy
+                    asyncio.run(swap(sol_addr,token_address,sol_amt))
+
+                    # 将地址记录到数据库中，同时记录 creator 和 smart_money
+                    smart_money = ""
+                    c.execute("INSERT INTO processed_addresses (token_address, creator, smart_money, dev_action) VALUES (?, ?, ?, ?)", (token_address, creator, smart_money, "dev buy"))
+
+                    conn.commit()
+
+            elif is_sell_exist:
+                print(token_address, "dev sell")
+
+
+    # 关闭数据库连接
+    conn.close()
+
+
+def update_dev_action():
+    while True:
+        print("check rug")
+        conn = sqlite3.connect('processed_addresses.db')
+        c = conn.cursor()
+
+        c.execute("SELECT token_address, creator, smart_money, dev_action FROM processed_addresses")
+        rows = c.fetchall()
+
+        for row in rows:
+            token_address, creator, smart_money, dev_action = row
+
+            # 如果 dev_action 已经是 "dev give up"，则跳过该 token_address
+            if dev_action == "dev give up":
+                continue
+
+            url = f"https://client-api-2-74b1891ee9f9.herokuapp.com/trades/{token_address}?limit=2000&offset=0"
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                trades = response.json()
+            except requests.RequestException as e:
+                print(f"Error fetching data for {token_address}: {e}")
+                continue
+            print(token_address,"check rug 1 ")
+
+            if trades:
+                is_sell_exist = False
+                for trade in trades:
+                    if trade["user"] == creator:
+                        if trade["is_buy"]:
+                            is_buy_exist = True
+                        else:
+                            is_sell_exist = True
+
+                if is_sell_exist:
+                    dev_action = "dev give up"
+                    ## TODO:SELL
+                    print("check rug 2 ")
+
+
+                try:
+                    ata = solana_client.get_token_accounts_by_owner(owner, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
+                    if ata.value != []:
+                        amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
+                        asyncio.run(swap(token_address,sol_addr,amt))
+                except Exception as e:
+                    print("An error occurred in get_token_accounts_by_owner:", e)
+
+                    num_trades = len(trades)
+                    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间并格式化为字符串
+                    c.execute("UPDATE processed_addresses SET dev_action=?, num_trades=?, current_time=? WHERE token_address=?", (dev_action, num_trades,current_time, token_address))
+                    conn.commit()
+
+        conn.close()
+        print("check over")
+        time.sleep(1)
+        delete_records()
+
+
+## TODO: 10:00 - 12:00 为高概率区域
 async def main():
-    DexscreenerClient()
-    for tokenn in tokens:
-        print("name: -> "  + tokenn.name)
-        print("mint: -> "  + tokenn.mint)
-        print("curve: -> "  + tokenn.bondingCurve)
-        print("associatedBonding: -> "  + tokenn.associatedBCurve)
-        print("Buying ... " + tokenn.name)
-        time.sleep(8)
+
+    # 启动更新线程
+    update_thread = threading.Thread(target=update_dev_action)
+    update_thread.daemon = True
+    update_thread.start()
+
+    while True:
+        get_new_tokens()
+        time.sleep(3)
 
 
 asyncio.run(main())
