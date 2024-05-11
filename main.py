@@ -269,7 +269,7 @@ def update_dev_action():
             # 如果 dev_action 已经是 "dev give up"，则跳过该 token_address
             if dev_action == "dev give up":
                 continue
-
+            time.sleep(1)
             url = f"https://client-api-2-74b1891ee9f9.herokuapp.com/trades/{token_address}?limit=2000&offset=0"
             try:
                 response = requests.get(url)
