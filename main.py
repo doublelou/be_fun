@@ -22,10 +22,20 @@ from solanatracker import SolanaTracker
 from solana.rpc.api import Client
 from solana.rpc.types import TokenAccountOpts
 from solders.pubkey import Pubkey
-
+import os
 solana_client = Client("https://api.mainnet-beta.solana.com")
 
-sol_key = Keypair.from_base58_string("")
+from dotenv import load_dotenv
+
+# 加载.env文件
+load_dotenv()
+
+# 从环境变量中获取密钥字符串
+sol_key_base58 = os.getenv("PRIVATE_KEY")
+
+# 使用密钥字符串创建Keypair对象
+sol_key = Keypair.from_base58_string(sol_key_base58)
+
 owner = sol_key.pubkey()
 
 
