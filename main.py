@@ -30,7 +30,7 @@ owner = sol_key.pubkey()
 
 
 sol_addr = "So11111111111111111111111111111111111111112"
-sol_amt = 0.005
+sol_amt = 0.05
 
 
 import sqlite3
