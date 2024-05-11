@@ -159,7 +159,7 @@ def delete_records():
     # 执行删除操作的 SQL 查询
     c.execute('''DELETE FROM processed_addresses 
                 WHERE dev_action = 'dev give up' 
-                AND (SELECT COUNT(*) FROM processed_addresses) > 50''')
+                AND (SELECT COUNT(*) FROM processed_addresses) > 20''')
 
     conn.commit()
 
@@ -285,14 +285,14 @@ def update_dev_action():
                     print("check rug 2 ")
 
 
-                try:
-                    ata = solana_client.get_token_accounts_by_owner(owner, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
-                    time.sleep(1)
-                    if ata.value != []:
-                        amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
-                        asyncio.run(swap(token_address,sol_addr,amt))
-                except Exception as e:
-                    print("An error occurred in get_token_accounts_by_owner:", e)
+                    try:
+                        ata = solana_client.get_token_accounts_by_owner(owner, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
+                        if ata.value != []:
+                            amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
+                            print(token_address,sol_addr,amt)
+                            asyncio.run(swap(token_address,sol_addr,amt))
+                    except Exception as e:
+                        print("An error occurred in get_token_accounts_by_owner:", e)
 
                     num_trades = len(trades)
                     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间并格式化为字符串
@@ -314,7 +314,7 @@ async def main():
     update_thread.start()
 
     while True:
-        get_new_tokens()
+        # get_new_tokens()
         time.sleep(3)
 
 
