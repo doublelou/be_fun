@@ -314,7 +314,7 @@ async def main():
     update_thread.start()
 
     while True:
-        # get_new_tokens()
+        get_new_tokens()
         time.sleep(3)
 
 
