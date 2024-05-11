@@ -287,6 +287,7 @@ def update_dev_action():
 
                 try:
                     ata = solana_client.get_token_accounts_by_owner(owner, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
+                    time.sleep(1)
                     if ata.value != []:
                         amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
                         asyncio.run(swap(token_address,sol_addr,amt))
