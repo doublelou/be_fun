@@ -359,7 +359,7 @@ def clean_dev_action():
                     camt = solana_client.get_token_account_balance(cata.value[0].pubkey).value.amount 
                     camount = int(camt)/1000000
                     print(token_address,"check rug 1 ",creator,"have",camount)
-                    time.sleep(10)
+                    time.sleep(5)
 
                     if camount < 10:
                         is_sell_exist = True
