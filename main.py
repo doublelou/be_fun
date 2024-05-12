@@ -322,7 +322,7 @@ def update_dev_action():
 
                     # num_trades = 0
                     # if trades:
-                    #     num_trades = len(trades)
+                    num_trades = len(trades)
                         
                     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间并格式化为字符串
                     c.execute("UPDATE processed_addresses SET dev_action=?, num_trades=?, current_time=? WHERE token_address=?", (dev_action, num_trades,current_time, token_address))
