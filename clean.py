@@ -363,7 +363,7 @@ def clean_dev_action():
                     time.sleep(5)
             except Exception as e:
                 print("An error occurred in get_token_accounts_by_owner:", e)
-                
+
             if camount < 10:
                 is_sell_exist = True
                 print("sell",is_sell_exist)
@@ -406,6 +406,7 @@ def clean_dev_action():
                         asyncio.run(swap(token_address,sol_addr,amount))
                 except Exception as e:
                     print("An error occurred in get_token_accounts_by_owner:", e)
+                    time.sleep(2)
 
                 num_trades = 0
                 if trades:
