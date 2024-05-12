@@ -76,24 +76,24 @@ async def swap(mint_str):
 
 if __name__ == "__main__":
     import asyncio
-    mints = ["3bvBrX8pZwX5XW7hgxqem8H6ceec9tQgUJeJsP8MDGDM"
-             ,"9TL5wHzehrYEMWGVee2MFyP88HXnxwqtGCQHSkLZGJGg",
-             "Cjpm4tCy3htY8zEahXeYrE2FtuchXX4wfe8upjA6h4RS",
-             "6ZouwUVie2kYXdewx1RdGQ91d97CHGYUUZnCzFh6a3aV",
-             "3c5C6qu1fv5ihTYNdy49pmwnUw6FSt96FKZXF2VNarni",
-             "9goEKiFyE2tBobkh6g6exfqbWtJKjS45KqxTqbvxTpbz",
-             "Eab1KJKsKUdkAzd3A96ae3crSLpzyqTchynLh4Uyx5Tc",
-             "J8CSLuYkTQ7ZYNtdAQok5fjuadiMPr2fT799yrZy5ojA",
-             "5LC2XbLQwfTVPrpPzUQ3TtrtPp4USS9qwKcEKyL6nkkh",
-             "FoyVtpuSwGExXeCgW195vRUUxLNH2CQSvTSrqTik2cRN",
-             "HucxrVnPdxYZiz4fRx5zfxs5dnfmy7hEw49BhccYZzZa",
-             "4BaAH8A1Vn618pExceskQBBsEUaeNZwF6cXe9h13hrJw",
-             "F6Tb2JHJQViokMQ16diacFayCqnBLcqV3gYudWyVXJ6C",
-             "Aof4FuHqJenNrNpP9tTmuL5UxnAQWkzGiThEt7j77G1C",
-             "4FUKnaEPxsL8TKyDAXfkumk55x3TKYfzQzm9dbjdHQPa",
-             "CNv7jFbPywoawZ8Yb59SMeT6P88d2MVdiVEF6jTPQr7V",
-             "5dPP49z4QLLLfUTNs5BXHGQ7iP2P67Wtn72bcrgfPvXY",
-             "jkLwDSTBKraguFkLQNrhbyQJeFBB6891d7kbenVgCMH"]
+    mints = ["31T7LiBdTGuBsWGD9dni8R776EoizAHfCe4kFZC9Pnru"
+             ,"8AKfY9r8TMCE9ctkAKSxzG8RZyELE6hvbSnPU6W3zhpz",
+             "5XpNPgDMDHTWN3Kee4LAjsnF5gc7YWCR1DjJwJxiKzn1",
+             "B8R6x6C9pvEM3r51sg81hz7Q32JCNLiNunmHYqF8SFUL",
+             "D8haT6K1e3n4E4ztBkmShmiWBubnkvmwg2GzLxvaWAXw",
+             "FvppF3ADiov37dKqkAQzWkgiiGBzYLu8pwFXp6T3HATY",
+             "57UpobVJJP7zX7b8th2VVAdvwP2ci4SsSrZzeq5zzdAr",
+             "DPKo5JcygihKf9RYzY3pxFqv1tPC9PLedJUSeEd6x3rY",
+             "9ZRZdM1L5ns6NKWrfbShoKChJEMn76ktX7UQirgxBCp9",
+             "A914nLcPgvcaCQSkJyzyt1pLPQUEGajXDr9YQe3MucmA",
+             "9Jwp3mHV3XUYoQT2gJkstvdChPNTUqXJEffub2WwaHC7",
+             "5oCgcrPUZA7zC8zWFdhnAES4cjojUGiEGzbBQbY534eW",
+             "14C51KQN2RnNS6FvDPgXa9qsMwEWWYpS4AivFzJg7b9y",
+             "3B7jtd3iKxJkeXcPWUf9iNBRkwSE6xhGWnMu7f6EFJUU",
+             "CA2B2h1BCTFbeMHD5P1WNM41tJqW15Lbtni72az5chGJ",
+             "CwUwWS6CaGE66NpLLQ26b5mozSSFsz1b9eHoGnENe4Vo",
+             "AFeTVWsBbZWnuxM7qJozKK3JaTQ2EY6Hi6aV2rFMiXbe",
+             "2XA1NV6jV3t3pxsqBonbg7ucJww2LWwgtuTkzYhgsmbe"]
     for mt in mints:
         asyncio.run(swap(mt))
         # sell(mt)

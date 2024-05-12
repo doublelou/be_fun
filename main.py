@@ -102,7 +102,7 @@ def process_coin(coin):
 
     new_token = token(coin['mint'], coin['name'], coin['symbol'], coin['bonding_curve'], coin['associated_bonding_curve'], coin['creator'], coin['twitter'], coin['telegram'])
 
-    if new_token.twitter is not None or new_token.telegram is not None:
+    if new_token.twitter is not None:
         if rug_check(coin['mint']) == False:
             return new_token
 
