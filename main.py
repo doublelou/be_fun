@@ -41,7 +41,7 @@ owner = sol_key.pubkey()
 
 sol_addr = "So11111111111111111111111111111111111111112"
 sol_amt = 0.05
-
+mint_dec = 1000000
 
 import sqlite3
 
@@ -299,8 +299,9 @@ def update_dev_action():
                         ata = solana_client.get_token_accounts_by_owner(owner, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
                         if ata.value != []:
                             amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
-                            print(token_address,sol_addr,amt)
-                            asyncio.run(swap(token_address,sol_addr,amt))
+                            amount = int(amt)/1000000
+                            print(token_address,sol_addr,amount)
+                            asyncio.run(swap(token_address,sol_addr,amount))
                     except Exception as e:
                         print("An error occurred in get_token_accounts_by_owner:", e)
 
