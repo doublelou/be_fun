@@ -359,13 +359,15 @@ def clean_dev_action():
                     camt = solana_client.get_token_account_balance(cata.value[0].pubkey).value.amount 
                     camount = int(camt)/1000000
                     print(token_address,"check rug 1 ",creator,"have",camount)
+                    time.sleep(10)
+
+                    if camount < 10:
+                        is_sell_exist = True
+                    else:
+                        continue
             except Exception as e:
                 print("An error occurred in get_token_accounts_by_owner:", e)
-                time.sleep(10)
-                if camount < 10:
-                    is_sell_exist = True
-                else:
-                    continue
+
             # print(token_address,"check rug 1 ")
 
                 url = f"https://client-api-2-74b1891ee9f9.herokuapp.com/trades/{token_address}?limit=2000&offset=0"
