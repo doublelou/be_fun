@@ -357,13 +357,13 @@ def clean_dev_action():
 
                 cata = solana_client.get_token_accounts_by_owner(Pubkey.from_string(creator), TokenAccountOpts(mint=Pubkey.from_string(token_address)))
                 if cata.value != []:
-                    time.sleep(5)
+                    time.sleep(1)
                     camt = solana_client.get_token_account_balance(cata.value[0].pubkey).value.amount 
                     camount = int(camt)/1000000
                     print(token_address,"check rug 1 ",creator,"have",camount)
             except Exception as e:
                 print("An error occurred in get_token_accounts_by_owner 1:", e)
-                time.sleep(10)
+                time.sleep(1)
 
             if camount < 10:
                 is_sell_exist = True
@@ -394,13 +394,13 @@ def clean_dev_action():
                 dev_action = "dev give up"
                 ## TODO:SELL
                 print("check rug 2 ")
-                time.sleep(5)
+                time.sleep(1)
 
 
                 try:
                     ata = solana_client.get_token_accounts_by_owner(owner, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
                     if ata.value != []:
-                        time.sleep(5)
+                        time.sleep(1)
                         amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
                         amount = int(amt)/1000000
                         if amount == 0:
@@ -409,7 +409,7 @@ def clean_dev_action():
                         asyncio.run(swap(token_address,sol_addr,amount))
                 except Exception as e:
                     print("An error occurred in get_token_accounts_by_owner:", e)
-                    time.sleep(5)
+                    time.sleep(1)
 
                 num_trades = 0
                 if trades:

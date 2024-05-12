@@ -141,7 +141,7 @@ async def swap(source,des,amt):
         source,  # From Token
         des,  # To Token
         amt,  # Amount to swap
-        10,  # Slippage
+        20,  # Slippage
         str(keypair.pubkey()),  # Payer public key
         0.00005,  # Priority fee (Recommended while network is congested)
         True,  # Force legacy transaction for Jupiter
