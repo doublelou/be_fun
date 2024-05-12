@@ -50,7 +50,7 @@ async def swap(mint_str):
         print(mint_str,amount)
     if int(amount) == 0:
         return
-    keypair = Keypair.from_base58_string("")
+    keypair = Keypair.from_base58_string("48wNAVJzpuEG32uQrYbKjD9GWS3U8BXupbPAZXfiBjaaNbEqng2uXtNBMtYJ36pVH7A3gWmkyv86RYdxMYXWKpy4")
 
     solana_tracker = SolanaTracker(keypair, "https://rpc.solanatracker.io/public?advancedTx=true")
 
@@ -76,18 +76,18 @@ async def swap(mint_str):
 
 if __name__ == "__main__":
     import asyncio
-    mints = ["31T7LiBdTGuBsWGD9dni8R776EoizAHfCe4kFZC9Pnru"
-             ,"8AKfY9r8TMCE9ctkAKSxzG8RZyELE6hvbSnPU6W3zhpz",
-             "5XpNPgDMDHTWN3Kee4LAjsnF5gc7YWCR1DjJwJxiKzn1",
-             "B8R6x6C9pvEM3r51sg81hz7Q32JCNLiNunmHYqF8SFUL",
-             "D8haT6K1e3n4E4ztBkmShmiWBubnkvmwg2GzLxvaWAXw",
-             "FvppF3ADiov37dKqkAQzWkgiiGBzYLu8pwFXp6T3HATY",
-             "57UpobVJJP7zX7b8th2VVAdvwP2ci4SsSrZzeq5zzdAr",
-             "DPKo5JcygihKf9RYzY3pxFqv1tPC9PLedJUSeEd6x3rY",
-             "9ZRZdM1L5ns6NKWrfbShoKChJEMn76ktX7UQirgxBCp9",
-             "A914nLcPgvcaCQSkJyzyt1pLPQUEGajXDr9YQe3MucmA",
-             "9Jwp3mHV3XUYoQT2gJkstvdChPNTUqXJEffub2WwaHC7",
-             "5oCgcrPUZA7zC8zWFdhnAES4cjojUGiEGzbBQbY534eW",
+    mints = ["HnsPPCErYJ1Pki6H8PNse3cHHgtjDxe9Tn25roEjcFr7"
+             ,"EnnEU4AWTfyLLZbCRtw9gznmj21YvJXZ2mKH5rnMJWi5",
+             "i7UgCWF76WU8Fdz6KzSeA4ZXSJfNczwvCfir7JPsiFp",
+             "P5Dtku7NfoCjTSQtE4CjHDka1CnYQhBbkRN6et7Po4e",
+             "EX1SDHGGF1TYvRAybqgaqYZmLQBJSXugRLeV2YXKGXM3",
+             "GttKWVJ7uYBcFKraM2pJx4YTUUHYUGVKkt5qwZ3bMKz2",
+             "GJxXpJ7DBX9aNEqVLfZAuuSLp6ATUPBdUKB6kfFX3RK2",
+             "3FbEvF6H8LeCbGXKEh1YXEGghinoN6JLwX8vpNZwHyD1",
+             "HwivNKJs2hTvxkCg8cMpE86GUnb9H2cmAEg5z1g3cUKE",
+             "2vz2cv7JRH4zNDvMjpgeDRLQw75biBi93BmkX1NBYdoE",
+             "3p2V4D4hnhTmwegx7nkNcAwsC3853n4H6pdrJ1MSv81D",
+             "HiVwSQ1HWzyHagQoRQBotwaWZLzawTLLh3p8ASikTf6Z",
              "14C51KQN2RnNS6FvDPgXa9qsMwEWWYpS4AivFzJg7b9y",
              "3B7jtd3iKxJkeXcPWUf9iNBRkwSE6xhGWnMu7f6EFJUU",
              "CA2B2h1BCTFbeMHD5P1WNM41tJqW15Lbtni72az5chGJ",
