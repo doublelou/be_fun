@@ -430,7 +430,17 @@ async def main():
         get_new_tokens()
         time.sleep(3)
 
+async def clean():
 
-asyncio.run(main())
+    update_thread = threading.Thread(target=clean_dev_action)
+    update_thread.daemon = True
+    update_thread.start()
 
+    while True:
+        time.sleep(3)
+
+
+#asyncio.run(main())
+
+asyncio.run(clean())
 
