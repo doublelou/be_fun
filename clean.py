@@ -357,6 +357,7 @@ def clean_dev_action():
 
                 cata = solana_client.get_token_accounts_by_owner(Pubkey.from_string(creator), TokenAccountOpts(mint=Pubkey.from_string(token_address)))
                 if cata.value != []:
+                    time.sleep(5)
                     camt = solana_client.get_token_account_balance(cata.value[0].pubkey).value.amount 
                     camount = int(camt)/1000000
                     print(token_address,"check rug 1 ",creator,"have",camount)
@@ -399,6 +400,7 @@ def clean_dev_action():
                 try:
                     ata = solana_client.get_token_accounts_by_owner(owner, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
                     if ata.value != []:
+                        time.sleep(5)
                         amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
                         amount = int(amt)/1000000
                         if amount == 0:
