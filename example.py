@@ -31,10 +31,10 @@ owner = "8ZeubP1FD4ZunFYhyB6UWhQHVuGenVXpgBCPxLA8gkJa"
 # mint = "4j3AVXkUaeUNYgmBTx3JydoYa8R6xVhtc3bjT117RiV1"
 from utils import get_coin_data, get_token_balance, confirm_txn
 from spl.token.instructions import create_associated_token_account, get_associated_token_address
+# from pump_fun import buy,sell
 
-
-async def swap():
-    mint_str = "DvTc5XkN3Wv2qymGP7Sn2bwjEDuBUAHRuJTE8qH7Tddf"
+async def swap(mint_str):
+    # mint_str = "9mCuHECgRUdaUNFeG9xfLoquzBDE2Bx4hvvK3B8tY3w1"
     # mint = Pubkey.from_string(mint_str)
     #     # Calculate token account
     # # token_account = get_associated_token_address(owner, mint)
@@ -43,12 +43,13 @@ async def swap():
     # amount = int(token_balance * 10**decimal)
     # print(amount)
     ata = solana_client.get_token_accounts_by_owner(Pubkey.from_string(owner), TokenAccountOpts(mint=Pubkey.from_string(mint_str)))
-    print(ata)
+    # print(ata)
     if ata.value != []:
         amount = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
 
-        print(amount)
-
+        print(mint_str,amount)
+    if int(amount) == 0:
+        return
     keypair = Keypair.from_base58_string("")
 
     solana_tracker = SolanaTracker(keypair, "https://rpc.solanatracker.io/public?advancedTx=true")
@@ -75,4 +76,24 @@ async def swap():
 
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(swap())
+    mints = ["FEerM1h6jBci19FVZytmhF8JkCQLp84cY4GmxdA2spV"
+             ,"6vAD8ovcJMZ1RCK3bmn6E6pZY48qLDP1WGuHeHawFWnt",
+             "54R3xwGkFSTb8xU36HgfmQEHirkAXt3bPEpbwacZM3RH",
+             "ADPyXRmGYPtrydFbCGoFWdEGB5ecogaraNXZ59fRsebx",
+             "5qyJZr8opayCaerFvn9kKkwxPh6MhPiBoeRbRrwMuNBL",
+             "G78ZitPxzQyGR4ucGh2PKjFuZG5gQB4i27c3CSgiLc6c",
+             "7cYSLWRk5vypdPpLKD6CgsFntTfLghs7r4bFRJsJUqok",
+             "7LjV8GMmfSNn1zpL5UkQWSBiTPt5iwu8hU34kjE9ECw8",
+             "BnwRBh2tz3bqc1qCPgmvB9EFEqVZwUUx65NLRuEpb9e8",
+             "B1eJ8XqibEaY9TubCNKSCZAJv7iqjb9xdyqcoJuRoghi",
+             "3zDxqoMX7aL3rkNVpUMMySJAoUSCK18YApzMTaGenPFW",
+             "2SSHHEeuDJZD3hHrRhjMW5qWJJTUVnWTvXR345j2jeN2",
+             "H6oS8x6HxR1XAt4UxxG1r8CLAoWahQ8VrUQd7XRnupEJ",
+             "2TR97zfumDJfUuUz99T9uhAoHUGnJe5AxCKdRunaUSRB",
+             "5UV4P4TT56LmPPgyeYgC1qEBTGErV5fGw83ou7PGFzDX",
+             "S8z3XBdx54NWgzaZqPxxmGCsGbawwShwMeyYgUsMTHR",
+             "GmzNT5HZGTGZg4V1WQVDDmxkDBwkqaNUpG5mKvuHryuS",
+             "6Tcq3v8h7HReb7HV31mSDCyj9p3ekmJVyxSpDWmv9b8m"]
+    for mt in mints:
+        asyncio.run(swap(mt))
+        # sell(mt)

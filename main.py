@@ -219,7 +219,7 @@ def check_dev(token_address, creator, smart_money):
             is_sell_exist = False
             for trade in trades:
                 if trade["user"] == creator:
-                    if trade["is_buy"]:
+                    if trade["is_buy"] and trade["sol_amount"] < 2999999972:
                         is_buy_exist = True
                     else:
                         is_sell_exist = True
@@ -270,24 +270,36 @@ def update_dev_action():
             if dev_action == "dev give up":
                 continue
             time.sleep(1)
-            url = f"https://client-api-2-74b1891ee9f9.herokuapp.com/trades/{token_address}?limit=2000&offset=0"
-            try:
-                response = requests.get(url)
-                response.raise_for_status()
-                trades = response.json()
-            except requests.RequestException as e:
-                print(f"Error fetching data for {token_address}: {e}")
-                continue
-            print(token_address,"check rug 1 ")
 
-            if trades:
-                is_sell_exist = False
-                for trade in trades:
-                    if trade["user"] == creator:
-                        if trade["is_buy"]:
-                            is_buy_exist = True
-                        else:
-                            is_sell_exist = True
+            is_sell_exist = False
+            cata = solana_client.get_token_accounts_by_owner(creator, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
+            if cata.value != []:
+                camt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
+                camount = int(camt)/1000000
+                print(token_address,"check rug 1 ",creator,"have",amount)
+
+                if camount == 0:
+                    is_sell_exist = True
+                else:
+                    continue
+
+                url = f"https://client-api-2-74b1891ee9f9.herokuapp.com/trades/{token_address}?limit=2000&offset=0"
+                try:
+                    response = requests.get(url)
+                    response.raise_for_status()
+                    trades = response.json()
+                except requests.RequestException as e:
+                    print(f"Error fetching data for {token_address}: {e}")
+                    continue
+
+            # if trades:
+            #     is_sell_exist = False
+            #     for trade in trades:
+            #         if trade["user"] == creator:
+            #             if trade["is_buy"]:
+            #                 is_buy_exist = True
+            #             else:
+            #                 is_sell_exist = True
 
                 if is_sell_exist:
                     dev_action = "dev give up"
@@ -300,12 +312,17 @@ def update_dev_action():
                         if ata.value != []:
                             amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
                             amount = int(amt)/1000000
+                            if amount == 0:
+                                return
                             print(token_address,sol_addr,amount)
                             asyncio.run(swap(token_address,sol_addr,amount))
                     except Exception as e:
                         print("An error occurred in get_token_accounts_by_owner:", e)
 
-                    num_trades = len(trades)
+                    num_trades = 0
+                    if trades:
+                        num_trades = len(trades)
+                        
                     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间并格式化为字符串
                     c.execute("UPDATE processed_addresses SET dev_action=?, num_trades=?, current_time=? WHERE token_address=?", (dev_action, num_trades,current_time, token_address))
                     conn.commit()

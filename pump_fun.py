@@ -200,7 +200,7 @@ def sell(mint_str, token_balance=None, slippage_percent=.01):
         # Create and send transaction
         transaction = VersionedTransaction(compiled_message, [payer_keypair])
         txn_sig = client.send_transaction(transaction, opts=TxOpts(skip_preflight=True, preflight_commitment="confirmed")).value
-        print(txn_sig)
+        print(f" Transaction URL: https://explorer.solana.com/tx/{txn_sig}")
 
         # Confirm transaction
         confirm = confirm_txn(txn_sig)
