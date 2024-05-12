@@ -361,7 +361,7 @@ def clean_dev_action():
                     camount = int(camt)/1000000
                     print(token_address,"check rug 1 ",creator,"have",camount)
             except Exception as e:
-                print("An error occurred in get_token_accounts_by_owner:", e)
+                print("An error occurred in get_token_accounts_by_owner 1:", e)
                 time.sleep(5)
 
             if camount < 10:
