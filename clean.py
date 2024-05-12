@@ -361,7 +361,7 @@ def clean_dev_action():
                     print(token_address,"check rug 1 ",creator,"have",camount)
             except Exception as e:
                 print("An error occurred in get_token_accounts_by_owner:", e)
-
+                time.sleep(3)
                 if camount == 0:
                     is_sell_exist = True
                 else:
