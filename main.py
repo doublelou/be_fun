@@ -271,35 +271,36 @@ def update_dev_action():
                 continue
             time.sleep(1)
 
-            is_sell_exist = False
-            cata = solana_client.get_token_accounts_by_owner(Pubkey.from_string(creator), TokenAccountOpts(mint=Pubkey.from_string(token_address)))
-            if cata.value != []:
-                camt = solana_client.get_token_account_balance(cata.value[0].pubkey).value.amount 
-                camount = int(camt)/1000000
-                print(token_address,"check rug 1 ",creator,"have",camount)
+            # is_sell_exist = False
+            # cata = solana_client.get_token_accounts_by_owner(Pubkey.from_string(creator), TokenAccountOpts(mint=Pubkey.from_string(token_address)))
+            # if cata.value != []:
+            #     camt = solana_client.get_token_account_balance(cata.value[0].pubkey).value.amount 
+            #     camount = int(camt)/1000000
+            #     print(token_address,"check rug 1 ",creator,"have",camount)
 
-                if camount == 0:
-                    is_sell_exist = True
-                else:
-                    continue
+            #     if camount == 0:
+            #         is_sell_exist = True
+            #     else:
+            #         continue
+            print(token_address,"check rug 1 ")
 
-                url = f"https://client-api-2-74b1891ee9f9.herokuapp.com/trades/{token_address}?limit=2000&offset=0"
-                try:
-                    response = requests.get(url)
-                    response.raise_for_status()
-                    trades = response.json()
-                except requests.RequestException as e:
-                    print(f"Error fetching data for {token_address}: {e}")
-                    continue
+            url = f"https://client-api-2-74b1891ee9f9.herokuapp.com/trades/{token_address}?limit=2000&offset=0"
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                trades = response.json()
+            except requests.RequestException as e:
+                print(f"Error fetching data for {token_address}: {e}")
+                continue
 
-            # if trades:
-            #     is_sell_exist = False
-            #     for trade in trades:
-            #         if trade["user"] == creator:
-            #             if trade["is_buy"]:
-            #                 is_buy_exist = True
-            #             else:
-            #                 is_sell_exist = True
+            if trades:
+                is_sell_exist = False
+                for trade in trades:
+                    if trade["user"] == creator:
+                        if trade["is_buy"]:
+                            is_buy_exist = True
+                        else:
+                            is_sell_exist = True
 
                 if is_sell_exist:
                     dev_action = "dev give up"
@@ -319,9 +320,9 @@ def update_dev_action():
                     except Exception as e:
                         print("An error occurred in get_token_accounts_by_owner:", e)
 
-                    num_trades = 0
-                    if trades:
-                        num_trades = len(trades)
+                    # num_trades = 0
+                    # if trades:
+                    #     num_trades = len(trades)
                         
                     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间并格式化为字符串
                     c.execute("UPDATE processed_addresses SET dev_action=?, num_trades=?, current_time=? WHERE token_address=?", (dev_action, num_trades,current_time, token_address))
