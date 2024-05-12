@@ -393,6 +393,7 @@ def clean_dev_action():
                 dev_action = "dev give up"
                 ## TODO:SELL
                 print("check rug 2 ")
+                time.sleep(5)
 
 
                 try:
