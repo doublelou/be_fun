@@ -272,11 +272,11 @@ def update_dev_action():
             time.sleep(1)
 
             is_sell_exist = False
-            cata = solana_client.get_token_accounts_by_owner(creator, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
+            cata = solana_client.get_token_accounts_by_owner(Pubkey.from_string(creator), TokenAccountOpts(mint=Pubkey.from_string(token_address)))
             if cata.value != []:
-                camt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
+                camt = solana_client.get_token_account_balance(cata.value[0].pubkey).value.amount 
                 camount = int(camt)/1000000
-                print(token_address,"check rug 1 ",creator,"have",amount)
+                print(token_address,"check rug 1 ",creator,"have",camount)
 
                 if camount == 0:
                     is_sell_exist = True
