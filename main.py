@@ -310,11 +310,6 @@ def update_dev_action():
 
                     try:
                         ata = solana_client.get_token_accounts_by_owner(owner, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
-                        num_trades = len(trades)
-                            
-                        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间并格式化为字符串
-                        c.execute("UPDATE processed_addresses SET dev_action=?, num_trades=?, current_time=? WHERE token_address=?", (dev_action, num_trades,current_time, token_address))
-                        conn.commit()
                         if ata.value != []:
                             amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
                             amount = int(amt)/1000000
@@ -322,7 +317,13 @@ def update_dev_action():
                                 return
                             print(token_address,sol_addr,amount)
                             asyncio.run(swap(token_address,sol_addr,amount))
+                        num_trades = 0
+                        if trades:
+                            num_trades = len(trades)
                             
+                        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间并格式化为字符串
+                        c.execute("UPDATE processed_addresses SET dev_action=?, num_trades=?, current_time=? WHERE token_address=?", (dev_action, num_trades,current_time, token_address))
+                        conn.commit()
                     except Exception as e:
                         print("An error occurred in get_token_accounts_by_owner:", e)
 
@@ -400,13 +401,6 @@ def clean_dev_action():
 
                     try:
                         ata = solana_client.get_token_accounts_by_owner(owner, TokenAccountOpts(mint=Pubkey.from_string(token_address)))
-                        num_trades = 0
-                        if trades:
-                            num_trades = len(trades)
-                            
-                        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间并格式化为字符串
-                        c.execute("UPDATE processed_addresses SET dev_action=?, num_trades=?, current_time=? WHERE token_address=?", (dev_action, num_trades,current_time, token_address))
-                        conn.commit()
                         if ata.value != []:
                             amt = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
                             amount = int(amt)/1000000
@@ -414,6 +408,14 @@ def clean_dev_action():
                                 return
                             print(token_address,sol_addr,amount)
                             asyncio.run(swap(token_address,sol_addr,amount))
+                        num_trades = 0
+                        if trades:
+                            num_trades = len(trades)
+                            
+                        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间并格式化为字符串
+                        c.execute("UPDATE processed_addresses SET dev_action=?, num_trades=?, current_time=? WHERE token_address=?", (dev_action, num_trades,current_time, token_address))
+                        conn.commit()
+
                     except Exception as e:
                         print("An error occurred in get_token_accounts_by_owner:", e)
 
