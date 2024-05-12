@@ -27,7 +27,7 @@ from solders.pubkey import Pubkey
 from solana.rpc.api import Client
 from solana.rpc.types import TokenAccountOpts
 solana_client = Client("https://api.mainnet-beta.solana.com")
-owner = "8ZeubP1FD4ZunFYhyB6UWhQHVuGenVXpgBCPxLA8gkJa"
+owner = "5Mqip1yYLEApij3gHVrUgZV5XjbRcRZNv22kSk2CJQpQ"
 # mint = "4j3AVXkUaeUNYgmBTx3JydoYa8R6xVhtc3bjT117RiV1"
 from utils import get_coin_data, get_token_balance, confirm_txn
 from spl.token.instructions import create_associated_token_account, get_associated_token_address
@@ -43,14 +43,15 @@ async def swap(mint_str):
     # amount = int(token_balance * 10**decimal)
     # print(amount)
     ata = solana_client.get_token_accounts_by_owner(Pubkey.from_string(owner), TokenAccountOpts(mint=Pubkey.from_string(mint_str)))
-    # print(ata)
     if ata.value != []:
         amount = solana_client.get_token_account_balance(ata.value[0].pubkey).value.amount 
-
+    
         print(mint_str,amount)
-    if int(amount) == 0:
+        if int(amount) == 0:
+            return
+    else:
         return
-    keypair = Keypair.from_base58_string("")
+    keypair = Keypair.from_base58_string("4ftvo45wKmtVs2whk2J9f48komF2sxfcUvcss8bQ31sG7kx4nn7mfbEyWDpochQSft9ty9jmqLFafyajuENFUVfn")
 
     solana_tracker = SolanaTracker(keypair, "https://rpc.solanatracker.io/public?advancedTx=true")
 
@@ -76,24 +77,21 @@ async def swap(mint_str):
 
 if __name__ == "__main__":
     import asyncio
-    mints = ["HnsPPCErYJ1Pki6H8PNse3cHHgtjDxe9Tn25roEjcFr7"
-             ,"EnnEU4AWTfyLLZbCRtw9gznmj21YvJXZ2mKH5rnMJWi5",
-             "i7UgCWF76WU8Fdz6KzSeA4ZXSJfNczwvCfir7JPsiFp",
-             "P5Dtku7NfoCjTSQtE4CjHDka1CnYQhBbkRN6et7Po4e",
-             "EX1SDHGGF1TYvRAybqgaqYZmLQBJSXugRLeV2YXKGXM3",
-             "GttKWVJ7uYBcFKraM2pJx4YTUUHYUGVKkt5qwZ3bMKz2",
-             "GJxXpJ7DBX9aNEqVLfZAuuSLp6ATUPBdUKB6kfFX3RK2",
-             "3FbEvF6H8LeCbGXKEh1YXEGghinoN6JLwX8vpNZwHyD1",
-             "HwivNKJs2hTvxkCg8cMpE86GUnb9H2cmAEg5z1g3cUKE",
-             "2vz2cv7JRH4zNDvMjpgeDRLQw75biBi93BmkX1NBYdoE",
-             "3p2V4D4hnhTmwegx7nkNcAwsC3853n4H6pdrJ1MSv81D",
-             "HiVwSQ1HWzyHagQoRQBotwaWZLzawTLLh3p8ASikTf6Z",
-             "14C51KQN2RnNS6FvDPgXa9qsMwEWWYpS4AivFzJg7b9y",
-             "3B7jtd3iKxJkeXcPWUf9iNBRkwSE6xhGWnMu7f6EFJUU",
-             "CA2B2h1BCTFbeMHD5P1WNM41tJqW15Lbtni72az5chGJ",
-             "CwUwWS6CaGE66NpLLQ26b5mozSSFsz1b9eHoGnENe4Vo",
-             "AFeTVWsBbZWnuxM7qJozKK3JaTQ2EY6Hi6aV2rFMiXbe",
-             "2XA1NV6jV3t3pxsqBonbg7ucJww2LWwgtuTkzYhgsmbe"]
+    import time
+    mints = [
+             "J6QUysfpZ8svcKBe5Te9XGcnNoZmrf85sE1XUfKkLS3R",
+             "pRegXNPifg8PxituKsGdBGdpmVqw3jrVSskr3y6cJ9U",
+             "HsfCDmYD6xEwoDZVUPGEPgXZGM9dK3H4cKgromvUfgoM",
+             "ASZAM8TYhEX1xrmV7FSJHhLobJCLNt68WK1AjnEtsSM1",
+             "Gms3tANf8fgMEFBQfPPzgBQSNTpiCSUxxmUyi6XiNGyr",
+             "8FddavFHQS7LVJpNb7WNzYzgkeRevJ3eviRBepMsyf8e",
+             "Aa342J5s8wHQfmSSSLsgshkowCfNhED66TTCysgBxA5s",
+             "2qnSQaGgfp9d1Kd5TKQFj26E49LNQgTAwVJiJCkY5cLj",
+             "3hAM7Mn9oDQKmDRy3m3PnZUHQUcWMZroeP2pSVy9dbgy",
+             "J6QUysfpZ8svcKBe5Te9XGcnNoZmrf85sE1XUfKkLS3R",
+             "pRegXNPifg8PxituKsGdBGdpmVqw3jrVSskr3y6cJ9U",
+             "ASZAM8TYhEX1xrmV7FSJHhLobJCLNt68WK1AjnEtsSM1",
+             "HsfCDmYD6xEwoDZVUPGEPgXZGM9dK3H4cKgromvUfgoM"]
     for mt in mints:
         asyncio.run(swap(mt))
         # sell(mt)

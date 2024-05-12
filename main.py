@@ -238,13 +238,13 @@ def check_dev(token_address, creator, smart_money):
                 else:
                     print(token_address, "dev buy")
                     ## TODO:buy
-                    asyncio.run(swap(sol_addr,token_address,sol_amt))
+                    # asyncio.run(swap(sol_addr,token_address,sol_amt))
 
-                    # 将地址记录到数据库中，同时记录 creator 和 smart_money
-                    smart_money = ""
-                    c.execute("INSERT INTO processed_addresses (token_address, creator, smart_money, dev_action) VALUES (?, ?, ?, ?)", (token_address, creator, smart_money, "dev buy"))
+                    # # 将地址记录到数据库中，同时记录 creator 和 smart_money
+                    # smart_money = ""
+                    # c.execute("INSERT INTO processed_addresses (token_address, creator, smart_money, dev_action) VALUES (?, ?, ?, ?)", (token_address, creator, smart_money, "dev buy"))
 
-                    conn.commit()
+                    # conn.commit()
 
             elif is_sell_exist:
                 print(token_address, "dev sell")
