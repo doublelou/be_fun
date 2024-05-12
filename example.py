@@ -50,7 +50,7 @@ async def swap(mint_str):
         print(mint_str,amount)
     if int(amount) == 0:
         return
-    keypair = Keypair.from_base58_string("48wNAVJzpuEG32uQrYbKjD9GWS3U8BXupbPAZXfiBjaaNbEqng2uXtNBMtYJ36pVH7A3gWmkyv86RYdxMYXWKpy4")
+    keypair = Keypair.from_base58_string("")
 
     solana_tracker = SolanaTracker(keypair, "https://rpc.solanatracker.io/public?advancedTx=true")
 
